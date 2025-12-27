@@ -6,6 +6,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import datetime
 from services.characters_service import main as ingest_characters_data
+from services.starships_service import main as ingest_starships_data
 
 # Importamos tu servicio
 from services.movies_service import main as ingest_movies_data
@@ -132,4 +133,36 @@ def seed_characters_data():
 
     except Exception as e:
         print(f"❌ Error en Seed Characters: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/system/seed/starships")
+def seed_starships_data():
+    """
+    Seeder para Naves (Starships):
+    Filtra naves de Ep 1-6, busca en Wiki y guarda en 'starships_raw'.
+    """
+    try:
+        collection = get_db_collection("starships_raw")
+
+        print("⏳ Inicializando sistemas de navegación...")
+        data = ingest_starships_data()
+
+        if not data:
+            return {"status": False, "message": "No starships data returned"}
+
+        delete_result = collection.delete_many({})
+
+        insert_result = collection.insert_many(data)
+
+        return {
+            "status": True,
+            "action": "seed_starships",
+            "deleted_previous": delete_result.deleted_count,
+            "inserted_count": len(insert_result.inserted_ids),
+            "sample_id": str(insert_result.inserted_ids[0])
+        }
+
+    except Exception as e:
+        print(f"❌ Error en Seed Starships: {e}")
         raise HTTPException(status_code=500, detail=str(e))
