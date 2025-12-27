@@ -1,0 +1,15 @@
+meta {
+  name: species_raw
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:3000/ingest/species_raw
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

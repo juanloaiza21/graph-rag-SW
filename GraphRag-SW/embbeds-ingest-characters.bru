@@ -1,0 +1,16 @@
+meta {
+  name: embbeds-ingest-characters
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3000/ingest/characters_raw
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
