@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import datetime
+from services.characters_service import main as ingest_characters_data
 
 # Importamos tu servicio
 from services.movies_service import main as ingest_movies_data
@@ -89,9 +90,6 @@ def seed_movies_data():
             return {"status": False, "message": "No data returned from service"}
 
         delete_result = collection.delete_many({})
-        print(f"🧹 Limpieza: {
-              delete_result.deleted_count} documentos eliminados.")
-
         insert_result = collection.insert_many(data)
 
         return {
@@ -104,4 +102,34 @@ def seed_movies_data():
 
     except Exception as e:
         print(f"❌ Error en Seed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/system/seed/characters")
+def seed_characters_data():
+    """
+    Seeder para Personajes
+    """
+    try:
+        collection = get_db_collection("characters_raw")
+
+        print("⏳ Iniciando protocolo de ingesta de droides y seres orgánicos...")
+        data = ingest_characters_data()
+
+        if not data:
+            return {"status": False, "message": "No data returned from characters service"}
+
+        delete_result = collection.delete_many({})
+        insert_result = collection.insert_many(data)
+
+        return {
+            "status": True,
+            "action": "seed_characters",
+            "deleted_previous": delete_result.deleted_count,
+            "inserted_count": len(insert_result.inserted_ids),
+            "sample_id": str(insert_result.inserted_ids[0])
+        }
+
+    except Exception as e:
+        print(f"❌ Error en Seed Characters: {e}")
         raise HTTPException(status_code=500, detail=str(e))
