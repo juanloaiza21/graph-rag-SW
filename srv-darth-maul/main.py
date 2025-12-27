@@ -9,6 +9,8 @@ from services.characters_service import main as ingest_characters_data
 from services.starships_service import main as ingest_starships_data
 from services.movies_service import main as ingest_movies_data
 from services.planets_service import main as ingest_planets_data
+from services.vehicles_service import main as ingest_vehicles_data
+from services.species_service import main as ingest_species_data
 
 load_dotenv()
 
@@ -197,4 +199,68 @@ def seed_planets_data():
 
     except Exception as e:
         print(f"❌ Error en Seed Planets: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/system/seed/vehicles")
+def seed_vehicles_data():
+    """
+    Seeder para Vehículos:
+    Filtra vehículos de Ep 1-6, busca en Wiki y guarda en 'vehicles_raw'.
+    """
+    try:
+        collection = get_db_collection("vehicles_raw")
+
+        print("⏳ Iniciando logística de transporte...")
+        data = ingest_vehicles_data()
+
+        if not data:
+            return {"status": False, "message": "No vehicles data returned"}
+
+        delete_result = collection.delete_many({})
+
+        insert_result = collection.insert_many(data)
+
+        return {
+            "status": True,
+            "action": "seed_vehicles",
+            "deleted_previous": delete_result.deleted_count,
+            "inserted_count": len(insert_result.inserted_ids),
+            "sample_id": str(insert_result.inserted_ids[0])
+        }
+
+    except Exception as e:
+        print(f"❌ Error en Seed Vehicles: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/system/seed/species")
+def seed_species_data():
+    """
+    Seeder para Especies:
+    Filtra especies de Ep 1-6, busca en Wiki y guarda en 'species_raw'.
+    """
+    try:
+        collection = get_db_collection("species_raw")
+
+        print("⏳ Iniciando análisis xenobiológico...")
+        data = ingest_species_data()
+
+        if not data:
+            return {"status": False, "message": "No species data returned"}
+
+        delete_result = collection.delete_many({})
+
+        insert_result = collection.insert_many(data)
+
+        return {
+            "status": True,
+            "action": "seed_species",
+            "deleted_previous": delete_result.deleted_count,
+            "inserted_count": len(insert_result.inserted_ids),
+            "sample_id": str(insert_result.inserted_ids[0])
+        }
+
+    except Exception as e:
+        print(f"❌ Error en Seed Species: {e}")
         raise HTTPException(status_code=500, detail=str(e))
