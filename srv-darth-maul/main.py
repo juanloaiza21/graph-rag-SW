@@ -7,9 +7,8 @@ from dotenv import load_dotenv
 from datetime import datetime
 from services.characters_service import main as ingest_characters_data
 from services.starships_service import main as ingest_starships_data
-
-# Importamos tu servicio
 from services.movies_service import main as ingest_movies_data
+from services.planets_service import main as ingest_planets_data
 
 load_dotenv()
 
@@ -165,4 +164,37 @@ def seed_starships_data():
 
     except Exception as e:
         print(f"❌ Error en Seed Starships: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/system/seed/planets")
+def seed_planets_data():
+    """
+    Seeder para Planetas:
+    Filtra planetas de Ep 1-6, busca en Wiki y guarda en 'planets_raw'.
+    """
+    try:
+        collection = get_db_collection("planets_raw")
+
+        print("⏳ Iniciando escaneo planetario...")
+        data = ingest_planets_data()
+
+        if not data:
+            return {"status": False, "message": "No planets data returned"}
+
+        # 3. Limpieza y Guardado
+        delete_result = collection.delete_many({})
+
+        insert_result = collection.insert_many(data)
+
+        return {
+            "status": True,
+            "action": "seed_planets",
+            "deleted_previous": delete_result.deleted_count,
+            "inserted_count": len(insert_result.inserted_ids),
+            "sample_id": str(insert_result.inserted_ids[0])
+        }
+
+    except Exception as e:
+        print(f"❌ Error en Seed Planets: {e}")
         raise HTTPException(status_code=500, detail=str(e))
