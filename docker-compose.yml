@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # 🗄️ MONGODB (Raw Data Lake - El Almacén Sith)
+  # ==========================================
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "${MONGO_PORT}:27017"
+    volumes:
+      - ./data/mongo:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+
+  # ==========================================
+  # 🕸️ NEO4J (Knowledge Graph - El Templo Jedi)
+  # ==========================================
+  neo4j:
+    image: neo4j:ubi9
+    container_name: neo4j
+    restart: always
+    ports:
+      - "${NEO4J_HTTP_PORT}:7474" # HTTP (Browser)
+      - "${NEO4J_BOLT_PORT}:7687" # Bolt (Driver Python/Rust)
+    volumes:
+      - ./data/neo4j/data:/data
+      - ./data/neo4j/logs:/logs
+      - ./data/neo4j/conf:/conf
+      - ./data/neo4j/plugins:/plugins
+    environment:
+      - NEO4J_AUTH=${NEO4J_USER}/${NEO4J_PASSWORD} 
+      - NEO4J_dbms_memory_pagecache_size=512M
+      - NEO4J_dbms_memory_heap_initial__size=512M
+      - NEO4J_dbms_memory_heap_max__size=1G
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+

@@ -1,0 +1,120 @@
+# ==========================================
+# GLOBAL & OS
+# ==========================================
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# ==========================================
+# SEGURIDAD Y VARIABLES DE ENTORNO (¡CRÍTICO!)
+# ==========================================
+# Ignora cualquier archivo .env en cualquier carpeta
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# ==========================================
+# IDEs & EDITORES
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ==========================================
+# DOCKER
+# ==========================================
+docker-compose.override.yml
+.docker/
+
+# Ignorar volúmenes de datos locales si los mapeas en el host
+# Ej: ./volumes/mongo_data
+volumes/
+data/db/
+neo4j/data/
+neo4j/logs/
+
+# ==========================================
+# PYTHON SITH SERVICES (Darth Maul & Darth Vader)
+# ==========================================
+# Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# Distribution / Packaging
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+*.egg-info/
+
+# Testing & Type checking
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Jupyter Notebooks (por si haces pruebas rápidas)
+.ipynb_checkpoints
+
+# ==========================================
+# RUST JEDI SERVICE (Yoda)
+# ==========================================
+/target/
+**/target/
+
+Cargo.lock.bk
+
+# ==========================================
+# FRONTEND JEDI CLIENT (Obi-Wan)
+# ==========================================
+# Dependencias
+node_modules/
+.pnpm-store/
+
+dist/
+build/
+out/
+
+.next/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==========================================
+# DATA TEMPORAL (Datagen outputs)
+# ==========================================
+*.json
+!package.json
+!tsconfig.json
+!manifest.json
+*_raw.txt
+downloads/
+temp_data/
+
+# --- Ignorar Datos de BD---
+data/
+mongo_data/
+
+# --- Ignorar Secretos y Entorno ---
+.env
+.venv
+venv/
+__pycache__/
+*.pyc
+
+# --- Ignorar Logs ---
+*.log
