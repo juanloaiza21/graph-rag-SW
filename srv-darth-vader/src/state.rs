@@ -9,3 +9,19 @@ pub struct AppState {
     pub gemini_key: String,
     pub mongo_db_name: String,
 }
+
+impl AppState {
+    pub fn new(
+        mongo: MongoClient,
+        graph: Arc<Graph>,
+        gemini_key: String,
+        mongo_db_name: String,
+    ) -> Self {
+        Self {
+            mongo,
+            graph,
+            gemini_key,
+            mongo_db_name,
+        }
+    }
+}
